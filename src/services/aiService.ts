@@ -12,6 +12,7 @@
 export interface AIResponse {
   content: string;
   sources?: string[];
+  timestamp?: string;
 }
 
 export const sendMessageToAI = async (message: string): Promise<AIResponse> => {
@@ -28,14 +29,17 @@ export const sendMessageToAI = async (message: string): Promise<AIResponse> => {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to connect to AI service');
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Error from AI service:', errorData);
+      throw new Error(`Failed to connect to AI service: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
     console.error('Error connecting to AI service:', error);
     return {
-      content: "I'm sorry, I couldn't process your request at the moment. Please try again later."
+      content: "I'm sorry, I couldn't process your request at the moment. Please try again later.",
+      timestamp: new Date().toISOString()
     };
   }
 };
