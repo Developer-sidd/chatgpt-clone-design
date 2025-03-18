@@ -27,9 +27,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }
   };
 
   return (
-    <div className="border-t border-border p-4">
+    <div className="border-t border-border p-4 animate-fade-in">
       <div className="mx-auto max-w-3xl">
-        <div className="relative flex items-end bg-background rounded-lg border border-input shadow-sm focus-within:ring-1 focus-within:ring-primary">
+        <div className="relative flex items-end bg-background rounded-lg border border-input shadow-sm focus-within:ring-1 focus-within:ring-primary hover-scale">
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -49,7 +49,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }
               disabled={!message.trim() || disabled}
               onClick={handleSendMessage}
               className={cn(
-                "rounded-full bg-primary text-white hover:bg-primary/90",
+                "rounded-full bg-primary text-white hover:bg-primary/90 animate-pulse",
                 !message.trim() && "opacity-50 cursor-not-allowed"
               )}
             >

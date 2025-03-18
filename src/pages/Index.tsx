@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
@@ -6,13 +5,14 @@ import ChatMessages, { Message } from '@/components/ChatMessages';
 import ChatInput from '@/components/ChatInput';
 import EmptyState from '@/components/EmptyState';
 import { useToast } from '@/components/ui/use-toast';
+import { sendMessageToAI } from '@/services/aiService';
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = async (content: string) => {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -23,17 +23,33 @@ const Index = () => {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
     
-    // Simulate AI response after a delay
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: getResponseForPrompt(content),
-      };
+    try {
+      // In production, use the Java backend
+      // const aiResponse = await sendMessageToAI(content);
+      // const responseContent = aiResponse.content;
       
-      setMessages((prev) => [...prev, assistantMessage]);
+      // For development/demo, we'll use the simulated response
+      // Remove this in production and uncomment the above code
+      const responseContent = getResponseForPrompt(content);
+      
+      setTimeout(() => {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: responseContent,
+        };
+        
+        setMessages((prev) => [...prev, assistantMessage]);
+        setIsLoading(false);
+      }, 1500);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to get response from AI service",
+        variant: "destructive",
+      });
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const getResponseForPrompt = (prompt: string): string => {
@@ -60,7 +76,7 @@ const Index = () => {
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
         
-        <main className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 flex flex-col overflow-hidden animate-fade-in">
           {messages.length === 0 ? (
             <EmptyState />
           ) : (
